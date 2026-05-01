@@ -1,4 +1,4 @@
-package com.order_processing_eda.order_service.entity;
+package com.orderprocessingeda.orderservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

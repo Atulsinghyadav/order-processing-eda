@@ -1,8 +1,8 @@
-package com.order_processing_eda.order_service.controller;
+package com.orderprocessingeda.orderservice.controller;
 
-import com.order_processing_eda.order_service.dto.OrderRequest;
-import com.order_processing_eda.order_service.dto.OrderResponse;
-import com.order_processing_eda.order_service.service.OrderService;
+import com.orderprocessingeda.orderservice.dto.OrderRequest;
+import com.orderprocessingeda.orderservice.dto.OrderResponse;
+import com.orderprocessingeda.orderservice.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

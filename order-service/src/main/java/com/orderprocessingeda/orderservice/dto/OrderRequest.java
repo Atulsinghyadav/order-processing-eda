@@ -1,6 +1,5 @@
-package com.order_processing_eda.order_service.dto;
+package com.orderprocessingeda.orderservice.dto;
 
-import com.order_processing_eda.order_service.entity.OrderItem;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

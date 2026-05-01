@@ -1,6 +1,6 @@
-package com.order_processing_eda.order_service.repository;
+package com.orderprocessingeda.orderservice.repository;
 
-import com.order_processing_eda.order_service.entity.OrderItem;
+import com.orderprocessingeda.orderservice.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.order_processing_eda.order_service;
+package com.orderprocessingeda.orderservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

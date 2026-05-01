@@ -1,4 +1,4 @@
-package com.order_processing_eda.order_service.dto;
+package com.orderprocessingeda.orderservice.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
