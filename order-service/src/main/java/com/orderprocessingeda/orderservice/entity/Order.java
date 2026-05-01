@@ -1,11 +1,10 @@
-package com.order_processing_eda.order_service.entity;
+package com.orderprocessingeda.orderservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 
 @Entity

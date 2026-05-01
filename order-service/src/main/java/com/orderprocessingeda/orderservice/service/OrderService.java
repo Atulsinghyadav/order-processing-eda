@@ -1,16 +1,15 @@
-package com.order_processing_eda.order_service.service;
+package com.orderprocessingeda.orderservice.service;
 
-import com.order_processing_eda.order_service.dto.OrderItemRequest;
-import com.order_processing_eda.order_service.dto.OrderRequest;
-import com.order_processing_eda.order_service.dto.OrderResponse;
-import com.order_processing_eda.order_service.entity.Order;
-import com.order_processing_eda.order_service.entity.OrderItem;
-import com.order_processing_eda.order_service.repository.OrderRepository;
+import com.orderprocessingeda.orderservice.dto.OrderItemRequest;
+import com.orderprocessingeda.orderservice.dto.OrderRequest;
+import com.orderprocessingeda.orderservice.dto.OrderResponse;
+import com.orderprocessingeda.orderservice.entity.Order;
+import com.orderprocessingeda.orderservice.entity.OrderItem;
+import com.orderprocessingeda.orderservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
