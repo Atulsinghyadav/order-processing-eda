@@ -21,7 +21,7 @@ public class OrderItem {
     private Long productId;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private Long quantity;
 
     @Column(nullable = false)
     private BigDecimal price;
