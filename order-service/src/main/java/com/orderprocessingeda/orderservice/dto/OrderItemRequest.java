@@ -23,7 +23,7 @@ public class OrderItemRequest {
 
     @NotNull
     @Min(1)
-    private Integer quantity;
+    private Long quantity;
 
     @NotNull
     @DecimalMin(value = "0.01")

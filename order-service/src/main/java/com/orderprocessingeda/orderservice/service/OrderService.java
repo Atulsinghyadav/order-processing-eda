@@ -1,10 +1,12 @@
 package com.orderprocessingeda.orderservice.service;
 
+import com.orderprocessingeda.orderservice.client.InventoryClient;
 import com.orderprocessingeda.orderservice.dto.OrderItemRequest;
 import com.orderprocessingeda.orderservice.dto.OrderRequest;
 import com.orderprocessingeda.orderservice.dto.OrderResponse;
 import com.orderprocessingeda.orderservice.entity.Order;
 import com.orderprocessingeda.orderservice.entity.OrderItem;
+import com.orderprocessingeda.orderservice.exception.InsufficientStockException;
 import com.orderprocessingeda.orderservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,11 @@ import java.util.UUID;
 public class OrderService {
 
     private OrderRepository orderRepository;
+    private InventoryClient inventoryClient;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, InventoryClient inventoryClient) {
         this.orderRepository = orderRepository;
+        this.inventoryClient = inventoryClient;
     }
 
     @Transactional
@@ -38,8 +42,13 @@ public class OrderService {
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
-
+       // System.out.println(inventoryClient.checkStock(101L, 1L));
         for(OrderItemRequest itemRequest: request.getItems()){
+            boolean available = inventoryClient.checkStock(itemRequest.getProductId(), itemRequest.getQuantity());
+            if(!available)  {
+                throw new InsufficientStockException("Insufficient stock");
+            }
+            System.out.println(available);
             OrderItem item = new OrderItem();
             item.setProductId(itemRequest.getProductId());
             item.setQuantity(itemRequest.getQuantity());
