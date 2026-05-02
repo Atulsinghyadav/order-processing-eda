@@ -1,15 +1,14 @@
-# macOS
+# OS
+.DS_Store
 **/.DS_Store
 
-
-# IDEs
+# IDE
 .idea/
 .vscode/
 *.iml
 
-# Build output
+# Build
 **/target/
-
 
 # Logs
 *.log
