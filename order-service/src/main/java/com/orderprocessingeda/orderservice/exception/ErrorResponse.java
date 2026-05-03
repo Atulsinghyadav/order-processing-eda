@@ -16,7 +16,11 @@ public class ErrorResponse {
 
     private String message;
 
-    private Map<String, String> erros;
+    private Map<String, String> errors;
+
+    private String errorCode;
+
+    private String errorPath;
 
     private LocalDateTime timestamp;
 }
