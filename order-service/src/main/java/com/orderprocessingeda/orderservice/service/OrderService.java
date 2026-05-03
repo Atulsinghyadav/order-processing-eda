@@ -8,6 +8,8 @@ import com.orderprocessingeda.orderservice.entity.Order;
 import com.orderprocessingeda.orderservice.entity.OrderItem;
 import com.orderprocessingeda.orderservice.exception.InsufficientStockException;
 import com.orderprocessingeda.orderservice.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class OrderService {
 
     private OrderRepository orderRepository;
     private InventoryClient inventoryClient;
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
     public OrderService(OrderRepository orderRepository, InventoryClient inventoryClient) {
         this.orderRepository = orderRepository;
@@ -46,6 +49,7 @@ public class OrderService {
         for(OrderItemRequest itemRequest: request.getItems()){
             boolean available = inventoryClient.checkStock(itemRequest.getProductId(), itemRequest.getQuantity());
             if(!available)  {
+                log.warn("Stock not available for productId = {}, quantity = {}", itemRequest.getProductId(), itemRequest.getQuantity());
                 throw new InsufficientStockException("Insufficient stock");
             }
             System.out.println(available);
@@ -64,6 +68,7 @@ public class OrderService {
         order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
         orderRepository.save(order);
+        log.info("Order created for userId = {}", order.getUserId());
 
         OrderResponse orderResponse = new OrderResponse(order.getOrderNumber(), order.getStatus(), order.getTotalAmount());
 
