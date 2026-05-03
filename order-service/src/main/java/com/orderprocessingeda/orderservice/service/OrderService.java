@@ -7,7 +7,9 @@ import com.orderprocessingeda.orderservice.dto.OrderResponse;
 import com.orderprocessingeda.orderservice.entity.Order;
 import com.orderprocessingeda.orderservice.entity.OrderItem;
 import com.orderprocessingeda.orderservice.exception.InsufficientStockException;
+import com.orderprocessingeda.orderservice.exception.InventoryUnavailableException;
 import com.orderprocessingeda.orderservice.repository.OrderRepository;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,14 +47,19 @@ public class OrderService {
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
-       // System.out.println(inventoryClient.checkStock(101L, 1L));
+
         for(OrderItemRequest itemRequest: request.getItems()){
+            try{
+                log.info("Calling inventory...");
             boolean available = inventoryClient.checkStock(itemRequest.getProductId(), itemRequest.getQuantity());
             if(!available)  {
                 log.warn("Stock not available for productId = {}, quantity = {}", itemRequest.getProductId(), itemRequest.getQuantity());
                 throw new InsufficientStockException("Insufficient stock");
+            }}catch (FeignException ex){
+                log.error("Feign failure", ex);
+                throw new InventoryUnavailableException("Inventory service unavailable");
             }
-            System.out.println(available);
+
             OrderItem item = new OrderItem();
             item.setProductId(itemRequest.getProductId());
             item.setQuantity(itemRequest.getQuantity());

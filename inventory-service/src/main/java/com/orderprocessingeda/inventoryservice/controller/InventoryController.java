@@ -20,6 +20,12 @@ public class InventoryController {
     @GetMapping("/check")
     public boolean check(@RequestParam Long productId,
                          @RequestParam Long quantity) {
+
+        try{
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.getStackTrace();
+        }
         return inventoryService.isAvailable(productId, quantity);
     }
 }
