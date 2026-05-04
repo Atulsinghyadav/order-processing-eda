@@ -1,20 +1,16 @@
 package com.orderprocessingeda.orderservice.service;
 
-import com.orderprocessingeda.orderservice.client.InventoryClient;
-import com.orderprocessingeda.orderservice.client.InventoryServiceWrapper;
+import com.atulyadav.event.OrderCreatedEvent;
+import com.atulyadav.event.OrderItemEvent;
 import com.orderprocessingeda.orderservice.dto.OrderItemRequest;
 import com.orderprocessingeda.orderservice.dto.OrderRequest;
 import com.orderprocessingeda.orderservice.dto.OrderResponse;
 import com.orderprocessingeda.orderservice.entity.Order;
 import com.orderprocessingeda.orderservice.entity.OrderItem;
-import com.orderprocessingeda.orderservice.exception.InsufficientStockException;
-import com.orderprocessingeda.orderservice.exception.InventoryUnavailableException;
+import com.orderprocessingeda.orderservice.kafka.OrderProducer;
 import com.orderprocessingeda.orderservice.repository.OrderRepository;
-import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +23,13 @@ import java.util.UUID;
 @Service
 public class OrderService {
 
-    private InventoryServiceWrapper inventoryServiceWrapper;
     private OrderRepository orderRepository;
-    private InventoryClient inventoryClient;
+    private OrderProducer orderProducer;
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
-    public OrderService(OrderRepository orderRepository, InventoryClient inventoryClient, InventoryServiceWrapper inventoryServiceWrapper) {
+    public OrderService(OrderRepository orderRepository, OrderProducer orderProducer) {
         this.orderRepository = orderRepository;
-        this.inventoryClient = inventoryClient;
-        this.inventoryServiceWrapper = inventoryServiceWrapper;
+        this.orderProducer = orderProducer;
     }
 
     @Transactional
@@ -55,12 +49,6 @@ public class OrderService {
 
         for(OrderItemRequest itemRequest: request.getItems()){
 
-            boolean available = inventoryServiceWrapper.checkInventory(itemRequest.getProductId(), itemRequest.getQuantity());
-            if(!available)  {
-                log.warn("Stock not available for productId = {}, quantity = {}", itemRequest.getProductId(), itemRequest.getQuantity());
-                throw new InsufficientStockException("Insufficient stock");
-            }
-
             OrderItem item = new OrderItem();
             item.setProductId(itemRequest.getProductId());
             item.setQuantity(itemRequest.getQuantity());
@@ -78,10 +66,13 @@ public class OrderService {
         orderRepository.save(order);
         log.info("Order created for userId = {}", order.getUserId());
 
+        List<OrderItemEvent> items = request.getItems().stream().map(
+                i -> new OrderItemEvent(i.getProductId(), i.getQuantity())).toList();
+
+        orderProducer.send(new OrderCreatedEvent(order.getId(),items));
+
         OrderResponse orderResponse = new OrderResponse(order.getOrderNumber(), order.getStatus(), order.getTotalAmount());
 
         return orderResponse;
     }
-
-
 }

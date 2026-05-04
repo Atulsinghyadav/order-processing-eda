@@ -48,14 +48,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InventoryUnavailableException.class)
-    public ResponseEntity<ErrorResponse> handleInventoryUnavailable(InventoryUnavailableException ex, HttpServletRequest request){
-
-        log.error("Inventory unavailable at {}", request.getRequestURI());
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), null, ErrorCodes.INVENTORY_UNAVAILABLE, request.getRequestURI(), LocalDateTime.now());
-        return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
-    }
-
     @ExceptionHandler(feign.FeignException.class)
     public ResponseEntity<ErrorResponse> handleFeignException(feign.FeignException ex, HttpServletRequest request){
         log.error("Inventory service call failed at {}", request.getRequestURI(), ex);
