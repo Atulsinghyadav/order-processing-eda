@@ -1,5 +1,6 @@
 package com.orderprocessingeda.orderservice.dto;
 
+import com.orderprocessingeda.orderservice.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ public class OrderResponse {
 
     private String orderNumber;
 
-    private String status;
+    private OrderStatus status;
 
     private BigDecimal totalAmount;
 }

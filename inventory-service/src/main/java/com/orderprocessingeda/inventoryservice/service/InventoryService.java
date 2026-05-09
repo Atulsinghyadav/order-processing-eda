@@ -1,42 +1,49 @@
 package com.orderprocessingeda.inventoryservice.service;
 
+import com.orderprocessingeda.inventoryservice.entity.Inventory;
+import com.orderprocessingeda.inventoryservice.producer.InventoryEventProducer;
+import com.orderprocessingeda.inventoryservice.repository.InventoryRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InventoryService {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
-    private final Map<Long, Long> stock = new HashMap<>();
+    private final InventoryRepository inventoryRepository;
+    private final InventoryEventProducer inventoryEventProducer;
 
-    @PostConstruct
-    void init() {
-        stock.put(101L, 10L);
-        stock.put(102L, 5L);
-        stock.put(103L, 0L);
+    public InventoryService(InventoryRepository inventoryRepository, InventoryEventProducer inventoryEventProducer) {
+        this.inventoryRepository = inventoryRepository;
+        this.inventoryEventProducer = inventoryEventProducer;
     }
 
-    public void reduceStock(Long productId, Long quantity){
+    @Transactional
+    public void reduceStock(Long productId, Long quantity, Long orderId){
 
-        Long currentStock = stock.getOrDefault(productId, 0L);
+        Inventory inventory = inventoryRepository.findById(productId)
+                .orElse(null);
 
-        if(currentStock < quantity){
-            log.warn("Stock inconsistency for product {}", productId);
+        if(inventory == null){
+            inventoryEventProducer.publishStockFailed(orderId, "Product not found in inventory");
+            return;
+        }
+        if(inventory.getQuantity() < quantity){
+            inventoryEventProducer.publishStockFailed(
+                    orderId,
+                    "Insufficient stock"
+            );
             return;
         }
 
-        stock.put(productId, currentStock - quantity);
-        log.info("Stock updated: productId={}, remaining={}", productId, stock.get(productId));
-
+        inventory.setQuantity(inventory.getQuantity() - quantity);
+        inventoryRepository.save(inventory);
+        log.info("Stock updated for product {} → remaining {}", productId, inventory.getQuantity());
+        inventoryEventProducer.publishStockReserved(orderId);
+        log.info("Published StockReservedEvent for orderId={}", orderId);
     }
 
-    public boolean isAvailable(Long productId, Long quantity) {
-        Long available = stock.getOrDefault(productId, 0L);
-        return quantity != null && quantity > 0 && available >= quantity;
-    }
 }
