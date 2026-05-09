@@ -9,11 +9,15 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Component
 public class OrderConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(OrderConsumer.class);
     private final InventoryService inventoryService;
+    private final Set<Long> processedOrders = new HashSet<>();
 
     public OrderConsumer(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
@@ -24,10 +28,20 @@ public class OrderConsumer {
     public void consume(OrderCreatedEvent event) {
 
         log.info("Received order event: {}", event.getOrderId());
+        Long orderId = event.getOrderId();
+
+        if(processedOrders.contains(orderId)){
+            log.warn("Duplicate event ignored for orderId={}", orderId);
+            return;
+        }
 
         for (OrderItemEvent item : event.getItems()) {
             inventoryService.reduceStock(item.getProductId(), item.getQuantity());
         }
+
+        processedOrders.add(orderId);
+
+        log.info("Processed orderId={}", orderId);
     }
 
 
