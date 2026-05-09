@@ -41,7 +41,7 @@ public class OrderConsumer {
         }
 
         for (OrderItemEvent item : event.getItems()) {
-            inventoryService.reduceStock(item.getProductId(), item.getQuantity());
+            inventoryService.reduceStock(item.getProductId(), item.getQuantity(), orderId);
         }
 
         processedOrders.add(orderId);

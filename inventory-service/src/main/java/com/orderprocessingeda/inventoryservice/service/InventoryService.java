@@ -1,6 +1,7 @@
 package com.orderprocessingeda.inventoryservice.service;
 
 import com.orderprocessingeda.inventoryservice.entity.Inventory;
+import com.orderprocessingeda.inventoryservice.producer.InventoryEventProducer;
 import com.orderprocessingeda.inventoryservice.repository.InventoryRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -13,26 +14,36 @@ public class InventoryService {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
     private final InventoryRepository inventoryRepository;
+    private final InventoryEventProducer inventoryEventProducer;
 
-    public InventoryService(InventoryRepository inventoryRepository) {
+    public InventoryService(InventoryRepository inventoryRepository, InventoryEventProducer inventoryEventProducer) {
         this.inventoryRepository = inventoryRepository;
+        this.inventoryEventProducer = inventoryEventProducer;
     }
 
     @Transactional
-    public void reduceStock(Long productId, Long quantity){
+    public void reduceStock(Long productId, Long quantity, Long orderId){
 
         Inventory inventory = inventoryRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElse(null);
 
+        if(inventory == null){
+            inventoryEventProducer.publishStockFailed(orderId, "Product not found in inventory");
+            return;
+        }
         if(inventory.getQuantity() < quantity){
-            log.warn("Insufficient stock for product {}", productId);
+            inventoryEventProducer.publishStockFailed(
+                    orderId,
+                    "Insufficient stock"
+            );
             return;
         }
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
         inventoryRepository.save(inventory);
-
         log.info("Stock updated for product {} → remaining {}", productId, inventory.getQuantity());
+        inventoryEventProducer.publishStockReserved(orderId);
+        log.info("Published StockReservedEvent for orderId={}", orderId);
     }
 
 }

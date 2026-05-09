@@ -27,7 +27,8 @@ public class Order {
     private Long userId;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @Column(nullable = false)
     private BigDecimal totalAmount;

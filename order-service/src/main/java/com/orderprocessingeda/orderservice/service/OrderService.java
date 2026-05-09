@@ -7,10 +7,12 @@ import com.orderprocessingeda.orderservice.dto.OrderRequest;
 import com.orderprocessingeda.orderservice.dto.OrderResponse;
 import com.orderprocessingeda.orderservice.entity.Order;
 import com.orderprocessingeda.orderservice.entity.OrderItem;
+import com.orderprocessingeda.orderservice.entity.OrderStatus;
 import com.orderprocessingeda.orderservice.kafka.OrderProducer;
 import com.orderprocessingeda.orderservice.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +39,7 @@ public class OrderService {
 
         Order order = new Order();
         order.setUserId(request.getUserId());
-        order.setStatus("PENDING");
+        order.setStatus(OrderStatus.PENDING);
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -63,13 +65,16 @@ public class OrderService {
 
         order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
+        log.info("Before save");
         orderRepository.save(order);
+        log.info("After save");
         log.info("Order created for userId = {}", order.getUserId());
 
         List<OrderItemEvent> items = request.getItems().stream().map(
                 i -> new OrderItemEvent(i.getProductId(), i.getQuantity())).toList();
 
         orderProducer.send(new OrderCreatedEvent(order.getId(),items));
+        log.info("After kafka publish");
 
         OrderResponse orderResponse = new OrderResponse(order.getOrderNumber(), order.getStatus(), order.getTotalAmount());
 
