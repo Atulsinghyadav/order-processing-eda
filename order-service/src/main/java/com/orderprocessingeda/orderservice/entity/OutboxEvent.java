@@ -27,8 +27,8 @@ public class OutboxEvent {
     private LocalDateTime createdAt;
 
     public OutboxEvent() {
-    }
 
+    }
     public OutboxEvent(String aggregateType,
                        Long aggregateId,
                        String eventType,

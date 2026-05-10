@@ -12,6 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderCreatedEvent {
+
+    private String eventId;
     private Long orderId;
     private List<OrderItemEvent> items;
 }

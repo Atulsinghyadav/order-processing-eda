@@ -78,7 +78,7 @@ public class OrderService {
         List<OrderItemEvent> items = request.getItems().stream().map(
                 i -> new OrderItemEvent(i.getProductId(), i.getQuantity())).toList();
 
-        OrderCreatedEvent event = new OrderCreatedEvent(order.getId(), items);
+        OrderCreatedEvent event = new OrderCreatedEvent(UUID.randomUUID().toString(),order.getId(), items);
 
         String payload;
 
