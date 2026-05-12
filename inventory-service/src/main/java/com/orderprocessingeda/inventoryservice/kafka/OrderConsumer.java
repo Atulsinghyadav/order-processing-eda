@@ -11,13 +11,12 @@ import org.springframework.kafka.annotation.BackOff;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
-import org.springframework.kafka.core.KafkaTemplate;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Component
 public class OrderConsumer {
@@ -33,9 +32,10 @@ public class OrderConsumer {
     }
 
     @RetryableTopic(attempts = "3", backOff = @BackOff( delay = 2000, multiplier = 2))
-    @KafkaListener(topics = "order-topic", groupId = "inventory-group")
+    @KafkaListener(topics = "order-topic", groupId = "inventory-group", concurrency = "2")
     @Transactional
     public void consume(OrderCreatedEvent event) {
+
 
         log.info("Received order event: {}", event.getOrderId());
 

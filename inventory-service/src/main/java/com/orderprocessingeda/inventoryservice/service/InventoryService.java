@@ -3,7 +3,6 @@ package com.orderprocessingeda.inventoryservice.service;
 import com.orderprocessingeda.inventoryservice.entity.Inventory;
 import com.orderprocessingeda.inventoryservice.producer.InventoryEventProducer;
 import com.orderprocessingeda.inventoryservice.repository.InventoryRepository;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,12 +36,6 @@ public class InventoryService {
                     "Insufficient stock"
             );
             return;
-        }
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
