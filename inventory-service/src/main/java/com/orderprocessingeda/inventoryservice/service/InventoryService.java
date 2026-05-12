@@ -39,6 +39,12 @@ public class InventoryService {
             return;
         }
 
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         inventory.setQuantity(inventory.getQuantity() - quantity);
         inventoryRepository.save(inventory);
         log.info("Stock updated for product {} → remaining {}", productId, inventory.getQuantity());

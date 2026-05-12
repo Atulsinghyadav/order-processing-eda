@@ -24,12 +24,12 @@ public class StockFailedConsumer {
 
         Order order = orderRepository
                 .findById(event.getOrderId())
-                .orElse(null);
+                .orElseThrow();
 
-        if(order == null){
-            log.error( "Order not found for orderId={}", event.getOrderId());
-            return;
-        }
+//        if(order == null){
+//            log.error( "Order not found for orderId={}", event.getOrderId());
+//            return;
+//        }
 
         order.setStatus(OrderStatus.CANCELLED);
 
