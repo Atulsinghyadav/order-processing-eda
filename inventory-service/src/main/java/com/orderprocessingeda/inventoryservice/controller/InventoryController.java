@@ -20,13 +20,6 @@ public class InventoryController {
         this.inventoryRepository = inventoryRepository;
     }
 
-//    @GetMapping("/check")
-//    public boolean check(@RequestParam Long productId,
-//                         @RequestParam Long quantity) {
-//
-//        return inventoryService.isAvailable(productId, quantity);
-//    }
-
     @GetMapping("/stock")
     public Long getStock(@RequestParam Long productId){
         return inventoryRepository.findById(productId).
