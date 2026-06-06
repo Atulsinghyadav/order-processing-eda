@@ -14,7 +14,7 @@ public class AuthController {
 
     private AuthService authService;
     private JwtService jwtService;
-   // private RegisterRequest registerRequest;
+
 
     public AuthController(AuthService authService, JwtService jwtService){
         this.authService = authService;
@@ -34,11 +34,4 @@ public class AuthController {
 
     }
 
-    @GetMapping("/test")
-    public String test() {
-
-        String token = jwtService.generateToken("atul");
-        return jwtService.extractUsername(token);
-
-    }
 }
