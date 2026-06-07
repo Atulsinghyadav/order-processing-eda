@@ -1,13 +1,10 @@
 package com.orderprocessingeda.authservice.jwt;
 
 import com.orderprocessingeda.authservice.config.JwtProperties;
-import com.orderprocessingeda.authservice.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -15,7 +12,6 @@ import java.security.Key;
 import java.util.Date;
 
 @Service
-
 public class JwtService {
 
     private  JwtProperties jwtProperties;
