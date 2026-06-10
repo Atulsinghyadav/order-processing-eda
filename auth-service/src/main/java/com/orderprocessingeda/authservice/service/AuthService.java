@@ -6,6 +6,7 @@ import com.orderprocessingeda.authservice.dto.RegisterRequest;
 import com.orderprocessingeda.authservice.entity.User;
 import com.orderprocessingeda.authservice.jwt.JwtService;
 import com.orderprocessingeda.authservice.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
