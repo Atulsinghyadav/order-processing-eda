@@ -13,4 +13,16 @@
 # Logs
 *.log
 
+# Maven
+target/
+
+# Extracted JAR contents
+temp-jar/
+
+# Environment variables
+.env
+
+# Java
+*.class
+
 
